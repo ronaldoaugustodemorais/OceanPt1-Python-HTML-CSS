@@ -1,9 +1,10 @@
 import sqlite3
 from flask import Flask, request, url_for, session, g, redirect, abort, render_template, flash
 
-#configuracao
+# configuração
 DATABASE = "blog.db"
 SECRET_KEY = 'pudim'
+
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -19,6 +20,7 @@ def antes_requisicao():
 def depois_request(exc):
     g.bd.close()
 
+
 @app.route('/')
 @app.route('/entradas')
 def exibir_entradas():
@@ -29,15 +31,10 @@ def exibir_entradas():
         entradas.append({'titulo': titulo, 'texto': texto})
     return render_template('exibir_entradas.html', entradas=entradas)
 
+
 @app.route('/inserir')
 def inserir_entrada():
-    if not session.get('logado'):
-        abort(401)
-    sql = "INSERT INTO entradas(titulo, texto) VALUES (?,?)"
-    g.bd.execute(sql,request.form['campoTitulo'],request.form['campoTexto'])
+    sql = "INSERT INTO entradas(titulo, texto) VALUES ('Terceiro Post','Esse é post 3')"
+    g.bd.execute(sql)
     g.bd.commit()
-    return redirect(url_for('exibir_entradas.html'))
-
-@app.route('/hello')
-def pagina_inicial():
-    return "Hello World!"
+    return redirect(url_for('exibir_entradas'))
