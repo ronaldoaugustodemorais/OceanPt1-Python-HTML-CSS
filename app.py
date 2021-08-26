@@ -20,7 +20,6 @@ def antes_requisicao():
 def depois_request(exc):
     g.bd.close()
 
-
 @app.route('/')
 @app.route('/entradas')
 def exibir_entradas():
@@ -31,10 +30,10 @@ def exibir_entradas():
         entradas.append({'titulo': titulo, 'texto': texto})
     return render_template('exibir_entradas.html', entradas=entradas)
 
-
 @app.route('/inserir')
 def inserir_entrada():
-    sql = "INSERT INTO entradas(titulo, texto) VALUES ('Terceiro Post','Esse é post 3')"
-    g.bd.execute(sql)
+    if not session.get('logado'):
+        abort(401)
+    sql = "INSERT INTO entradas(titulo, texto) VALUES (?,?)"
+    g.bd.execute(sql, request.form['campoTitulo'], request.form['campoTexto'])
     g.bd.commit()
-    return redirect(url_for('exibir_entradas'))
